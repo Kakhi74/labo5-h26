@@ -11,7 +11,7 @@
             "request": "attach",
             "gdbpath": "${env:HOME}/arm-cross-comp-env/arm-raspbian-linux-gnueabi/bin/arm-raspbian-linux-gnueabi-gdb",
             "executable": "./build/emulateurClavier",
-            "target": "ADRESSE DE VOTRE RASPBERRY PI ICI:4560",
+            "target": "kakhi.dedyn.io:4560",
             "remote": true,
             "autorun": [
                 "set sysroot ${env:HOME}/arm-cross-comp-env/arm-raspbian-linux-gnueabi/arm-raspbian-linux-gnueabi/sysroot/"

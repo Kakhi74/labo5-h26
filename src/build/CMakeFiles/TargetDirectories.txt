@@ -1,0 +1,3 @@
+/home/setr/projets/labo5-h26/src/build/CMakeFiles/emulateurClavier.dir
+/home/setr/projets/labo5-h26/src/build/CMakeFiles/edit_cache.dir
+/home/setr/projets/labo5-h26/src/build/CMakeFiles/rebuild_cache.dir
