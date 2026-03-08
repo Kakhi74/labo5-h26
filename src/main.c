@@ -111,7 +111,10 @@ static void* threadFonctionLecture(void *args){
                         }
                     }
                     bytes = read(infos->pipeFd, req.data + bytes_read, buf_size - bytes_read);
-                    if (bytes == 0) break;
+                    if (bytes == 0){
+                        fprintf(stderr, "payload is missing eot");
+                        pthread_exit(1);
+                    }
                     if (bytes < 0){
                         perror("read failed");
                         pthread_exit(1);
@@ -119,6 +122,7 @@ static void* threadFonctionLecture(void *args){
                     while (bytes > 0){
                         if (req.data[bytes_read] == 0x4){
                             eot = 1;
+                            --bytes_read;
                             req.data = realloc(req.data, bytes_read);
                             req.taille = bytes_read;
                             req.tempsReception = get_time();
