@@ -38,7 +38,15 @@ int ecrireCaracteres(FILE* periphClavier, const char* caracteres, size_t len, un
                     buf[buf_pos++] = 44;
                     ++i;
                 } else {
-                    break;
+                    if (caracteres[i] == '0'
+                        || caracteres[i] == ','
+                        || caracteres[i] == '.'
+                        || caracteres[i] == '\n'
+                        || (caracteres[i] >= 'a' && caracteres[i] <= 'z')
+                        || (caracteres[i] >= '1' && caracteres[i] <= '9')){
+                        break;
+                    }
+                    return -1;
                 }
             }
         } else {
@@ -63,7 +71,10 @@ int ecrireCaracteres(FILE* periphClavier, const char* caracteres, size_t len, un
                     buf[buf_pos++] = 44;
                     ++i;
                 } else {
-                    break;
+                    if (caracteres[i] >= 'A' && caracteres[i] <= 'Z'){
+                        break;
+                    }
+                    return -1;
                 }
             }
         }
