@@ -73,16 +73,19 @@ void resetStats(){ // QUESTION_PROF proteger par mutex?
     // Reinitialise les variables de statistique
 
     // TODO
+    // pthread_mutex_lock(&mutexTampon);
     nombreRequetesRecues = 0;
     nombreRequetesTraitees = 0;
     nombreRequetesPerdues = 0;
 
     sommeTempsAttente = 0;
     tempsDebutPeriode = get_time();
+    // pthread_mutex_lock(&mutexTampon);
 }
 
 void calculeStats(struct statistiques *stats){ // QUESTION_PROF proteger par mutex?
     // TODO
+    // pthread_mutex_lock(&mutexTampon);
     stats->nombreRequetesTraitees = nombreRequetesTraitees;
     stats->nombreRequetesPerdues = nombreRequetesPerdues;
     stats->nombreRequetesEnAttente = longueurCourante;
@@ -93,6 +96,7 @@ void calculeStats(struct statistiques *stats){ // QUESTION_PROF proteger par mut
     stats->lambda = nombreRequetesRecues / dt;
     stats->mu = nombreRequetesTraitees / dt;
     stats->rho = stats->lambda / stats->mu;
+    // pthread_mutex_unlock(&mutexTampon);
 }
 
 int insererDonnee(struct requete *req){

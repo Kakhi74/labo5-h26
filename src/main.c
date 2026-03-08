@@ -28,6 +28,7 @@ static void* threadFonctionClavier(void* args){
     // pour etre certain de commencer au meme moment que le thread lecteur
 
     // TODO
+    pthread_barrier_wait(infos->barriere);
 
     // Finalement, ecrivez dans cette boucle la logique du thread, qui doit:
     // 1) Tenter d'obtenir une requete depuis le tampon circulaire avec consommerDonnee()
@@ -35,9 +36,16 @@ static void* threadFonctionClavier(void* args){
     // 3) S'il y en a une, appeler ecrireCaracteres avec les informations requises
     // 4) Liberer la memoire du champ data de la requete avec la fonction free(), puisque
     //      la requete est maintenant terminee
-
+    struct requete req;
     while(1){
-       // TODO
+        // TODO
+        if (consommerDonnee(&req) == 0){
+            usleep(500);
+        } else {
+            // TODO: review ecrire caracteres, la portion req.data, not sure
+            ecrireCaracteres(infos->pointeurClavier, req.data, req.taille, infos->tempsTraitementParCaractereMicroSecondes);
+            free(req.data);
+        }
     }
     return NULL;
 }
@@ -56,6 +64,7 @@ static void* threadFonctionLecture(void *args){
     // pour etre certain de commencer au meme moment que le thread lecteur
 
     // TODO
+    pthread_barrier_wait(infos->barriere);
 
     // Finalement, ecrivez dans cette boucle la logique du thread, qui doit:
     // 1) Remplir setFd en utilisant FD_ZERO et FD_SET correctement, pour faire en sorte
@@ -69,8 +78,48 @@ static void* threadFonctionLecture(void *args){
     //      retrouver dans le champ data de la requete! N'oubliez pas egalement de donner
     //      la bonne valeur aux champs taille et tempsReception.
 
+    struct requete req;
+    ssize_t bytes;
+    size_t bytes_read;
+    size_t buf_size;
+    int eot;
     while(1){
         // TODO
+        FD_ZERO(&setFd);
+        FD_SET(infos->pipeFd, &setFd);
+        if (select(nfds, &setFd, NULL, NULL, NULL) > 0){
+            if (FD_ISSET(infos->pipeFd, &setFd)){
+                eot = 0;
+                bytes = 0;
+                bytes_read = 0;
+                buf_size = 1024;
+                req.data = malloc(buf_size);
+                while (!eot) {
+                    if (bytes_read == buf_size){
+                        buf_size *= 2;
+                        req.data = realloc(req.data, buf_size);
+                    }
+                    bytes = read(infos->pipeFd, req.data + bytes_read, buf_size - bytes_read);
+                    if (bytes == 0) break;
+                    if (bytes < 0){
+                        perror("read failed");
+                        break;
+                    }
+                    while (bytes > 0){
+                        if (req.data[bytes_read] == 0x4){
+                            eot = 1;
+                            req.data = realloc(req.data, bytes_read);
+                            req.taille = bytes_read;
+                            req.tempsReception = get_time();
+                            insererDonnee(&req);
+                            break;
+                        }
+                        ++bytes_read;
+                        --bytes;
+                    }
+                }
+            }
+        }
     }
     return NULL;
 }
@@ -92,19 +141,46 @@ int main(int argc, char* argv[]){
     // 1) Ouvrir le named pipe
 
     // TODO
+    // TODO: Check later if we need read and write
+    int pipeFd = open(argv[1], O_RDWR, 0777);
+    if (pipeFd < 0){
+        perror("open failed");
+        return -1;
+    }
 
     // 2) Declarer et initialiser la barriere
     
     // TODO
+    pthread_barrier_t barrier;
+    pthread_barrier_init(&barrier, NULL, 2);
 
     // 3) Initialiser le tampon circulaire avec la bonne taille
 
     // TODO
+    size_t buf_size = atoi(argv[3]);
+    if (initTamponCirculaire(buf_size) < 0){
+        fprintf(stderr, "initTamponCirculaire(%d) failed", buf_size);
+        return -1;
+    }
 
     // 4) Creer et lancer les threads clavier et lecteur, en leur passant les bons arguments dans leur struct de configuration respective
     
     // TODO
+    pthread_t thread_clavier;
+    struct infoThreadClavier info_clavier;
+    info_clavier.barriere = &barrier;
+    info_clavier.pointeurClavier = initClavier();
+    info_clavier.tempsTraitementParCaractereMicroSecondes = atoi(argv[2]);
+    pthread_create(&thread_clavier, NULL, threadFonctionClavier, &info_clavier);
 
+    pthread_t thread_lecteur;
+    struct infoThreadLecture info_lecture;
+    info_lecture.barriere = &barrier;
+    info_lecture.pipeFd = pipeFd;
+    pthread_create(&thread_lecteur, NULL, threadFonctionLecture, &info_lecture);
+
+    pthread_join(thread_clavier, NULL);
+    pthread_join(thread_lecteur, NULL);
 
     // La boucle de traitement est deja implementee pour vous. Toutefois, si vous voulez eviter l'affichage des statistiques
     // (qui efface le terminal a chaque fois), vous pouvez commenter la ligne afficherStats().
