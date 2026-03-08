@@ -20,4 +20,57 @@ FILE* initClavier(){
 int ecrireCaracteres(FILE* periphClavier, const char* caracteres, size_t len, unsigned int tempsTraitementParPaquetMicroSecondes){
     // TODO ecrivez votre code ici. Voyez les explications dans l'enonce et dans
     // emulateurClavier.h
+    // numbers 48 - 57
+    // lower 97 - 122
+    // upper 65 - 90
+    char buf[LONGUEUR_USB_PAQUET] = {0};
+    size_t buf_pos;
+    size_t i = 0;
+    while (i < len){
+        buf_pos = 2;
+        if (caracteres[i] >= 'A' && caracteres[i] <= 'Z'){ // upper
+            buf[0] = 2;
+            buf[buf_pos++] = caracteres[i++] - 'A' + 4;
+            while (buf_pos < LONGUEUR_USB_PAQUET && i < len){
+                if (caracteres[i] >= 'A' && caracteres[i] <= 'Z'){
+                    buf[buf_pos++] = caracteres[i++] - 'A' + 4;
+                } else if (caracteres[i] == ' '){
+                    buf[buf_pos++] = 44;
+                    ++i;
+                } else {
+                    break;
+                }
+            }
+        } else {
+            while (buf_pos < LONGUEUR_USB_PAQUET && i < len){
+                if (caracteres[i] >= 'a' && caracteres[i] <= 'z'){ // lower
+                    buf[buf_pos++] = caracteres[i++] - 'a' + 4;
+                } else if (caracteres[i] >= '1' && caracteres[i] <= '9'){ // 1..9
+                    buf[buf_pos++] = caracteres[i++] - '1' + 30;
+                } else if (caracteres[i] == '0'){
+                    buf[buf_pos++] = 39;
+                    ++i;
+                } else if (caracteres[i] == ','){
+                    buf[buf_pos++] = 54;
+                    ++i;
+                } else if (caracteres[i] == '.'){
+                    buf[buf_pos++] = 55;
+                    ++i;
+                } else if (caracteres[i] == '\n'){
+                    buf[buf_pos++] = 40;
+                    ++i;
+                } else if (caracteres[i] == ' '){
+                    buf[buf_pos++] = 44;
+                    ++i;
+                } else {
+                    break;
+                }
+            }
+        }
+        if (fwrite(buf, LONGUEUR_USB_PAQUET, 1, periphClavier) != 1) return -1;
+        memset(buf, 0, LONGUEUR_USB_PAQUET);
+        if (fwrite(buf, LONGUEUR_USB_PAQUET, 1, periphClavier) != 1) return -1;
+        usleep(tempsTraitementParPaquetMicroSecondes);
+    }
+    return i;
 }
