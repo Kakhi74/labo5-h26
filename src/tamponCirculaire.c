@@ -69,10 +69,11 @@ int initTamponCirculaire(size_t taille){
     return 0;
 }
 
-void resetStats(){ // QUESTION_PROF proteger par mutex?
+void resetStats(){
     // Reinitialise les variables de statistique
 
     // TODO
+    // QUESTION_PROF: proteger par mutex?
     // pthread_mutex_lock(&mutexTampon);
     nombreRequetesRecues = 0;
     nombreRequetesTraitees = 0;
@@ -83,8 +84,9 @@ void resetStats(){ // QUESTION_PROF proteger par mutex?
     // pthread_mutex_lock(&mutexTampon);
 }
 
-void calculeStats(struct statistiques *stats){ // QUESTION_PROF proteger par mutex?
+void calculeStats(struct statistiques *stats){
     // TODO
+    // QUESTION_PROF: proteger par mutex?
     // pthread_mutex_lock(&mutexTampon);
     stats->nombreRequetesTraitees = nombreRequetesTraitees;
     stats->nombreRequetesPerdues = nombreRequetesPerdues;
@@ -147,7 +149,7 @@ int consommerDonnee(struct requete *req){
     // N'oubliez pas de proteger les operations qui le necessitent par un mutex!
     
     // TODO
-    // double dt = get_time() - req->tempsReception;
+    // QUESTION_PROF: should i make the get_time() call outside of mutex lock?
     pthread_mutex_lock(&mutexTampon);
     if (longueurCourante == 0){
         pthread_mutex_unlock(&mutexTampon);

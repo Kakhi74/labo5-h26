@@ -45,7 +45,7 @@ static void* threadFonctionClavier(void* args){
             // TODO: review ecrire caracteres, la portion req.data, not sure
             if (ecrireCaracteres(infos->pointeurClavier, req.data, req.taille, infos->tempsTraitementParCaractereMicroSecondes) < 0){
                 fprintf(stderr, "ecrireCaracteres failed");
-                pthread_exit(1);
+                pthread_exit((void *)1);
             }
             free(req.data);
         }
@@ -99,7 +99,7 @@ static void* threadFonctionLecture(void *args){
                 req.data = malloc(buf_size);
                 if (!req.data){
                     perror("malloc failed");
-                    pthread_exit(1);
+                    pthread_exit((void *)1);
                 }
                 while (!eot) {
                     if (bytes_read == buf_size){
@@ -107,17 +107,17 @@ static void* threadFonctionLecture(void *args){
                         req.data = realloc(req.data, buf_size);
                         if (!req.data){
                             perror("realloc failed");
-                            pthread_exit(1);
+                            pthread_exit((void *)1);
                         }
                     }
                     bytes = read(infos->pipeFd, req.data + bytes_read, buf_size - bytes_read);
                     if (bytes == 0){
                         fprintf(stderr, "payload is missing eot");
-                        pthread_exit(1);
+                        pthread_exit((void *)1);
                     }
                     if (bytes < 0){
                         perror("read failed");
-                        pthread_exit(1);
+                        pthread_exit((void *)1);
                     }
                     while (bytes > 0){
                         if (req.data[bytes_read] == 0x4){
