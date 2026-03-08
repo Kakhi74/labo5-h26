@@ -43,7 +43,10 @@ static void* threadFonctionClavier(void* args){
             usleep(500);
         } else {
             // TODO: review ecrire caracteres, la portion req.data, not sure
-            ecrireCaracteres(infos->pointeurClavier, req.data, req.taille, infos->tempsTraitementParCaractereMicroSecondes);
+            if (ecrireCaracteres(infos->pointeurClavier, req.data, req.taille, infos->tempsTraitementParCaractereMicroSecondes) < 0){
+                fprintf(stderr, "ecrireCaracteres failed");
+                pthread_exit(1);
+            }
             free(req.data);
         }
     }
@@ -94,16 +97,24 @@ static void* threadFonctionLecture(void *args){
                 bytes_read = 0;
                 buf_size = 1024;
                 req.data = malloc(buf_size);
+                if (!req.data){
+                    perror("malloc failed");
+                    pthread_exit(1);
+                }
                 while (!eot) {
                     if (bytes_read == buf_size){
                         buf_size *= 2;
                         req.data = realloc(req.data, buf_size);
+                        if (!req.data){
+                            perror("realloc failed");
+                            pthread_exit(1);
+                        }
                     }
                     bytes = read(infos->pipeFd, req.data + bytes_read, buf_size - bytes_read);
                     if (bytes == 0) break;
                     if (bytes < 0){
                         perror("read failed");
-                        break;
+                        pthread_exit(1);
                     }
                     while (bytes > 0){
                         if (req.data[bytes_read] == 0x4){
