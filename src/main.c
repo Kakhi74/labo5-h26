@@ -193,10 +193,7 @@ int main(int argc, char* argv[]){
     info_lecture.barriere = &barrier;
     info_lecture.pipeFd = pipeFd;
     pthread_create(&thread_lecteur, NULL, threadFonctionLecture, &info_lecture);
-
-    pthread_join(thread_clavier, NULL);
-    pthread_join(thread_lecteur, NULL);
-
+    
     // La boucle de traitement est deja implementee pour vous. Toutefois, si vous voulez eviter l'affichage des statistiques
     // (qui efface le terminal a chaque fois), vous pouvez commenter la ligne afficherStats().
     struct statistiques stats;
@@ -208,5 +205,9 @@ int main(int argc, char* argv[]){
         resetStats();
         usleep(2e6);
     }
+
+    pthread_join(thread_clavier, NULL);
+    pthread_join(thread_lecteur, NULL);
+
     return 0;
 }
