@@ -8,82 +8,70 @@
  ******************************************************************************/
 
 #include "emulateurClavier.h"
+#include <stdlib.h>
 
 FILE* initClavier(){
     // Deja implementee pour vous
     FILE* f = fopen(FICHIER_CLAVIER_VIRTUEL, "wb");
+    if (f == NULL){
+        perror("fopen");
+        exit(1);
+    }
     setbuf(f, NULL);        // On desactive le buffering pour eviter tout delai
     return f;
 }
 
-
-int ecrireCaracteres(FILE* periphClavier, const char* caracteres, size_t len, unsigned int tempsTraitementParPaquetMicroSecondes){
-    // TODO ecrivez votre code ici. Voyez les explications dans l'enonce et dans
-    // emulateurClavier.h
-    char buf[LONGUEUR_USB_PAQUET] = {0};
+int ecrireCaracteres(FILE* periphClavier, const char* caracteres, size_t len, unsigned int tempsTraitementParPaquetMicroSecondes) {
+    unsigned char buf[LONGUEUR_USB_PAQUET] = {0};
     size_t buf_pos;
     size_t i = 0;
+    unsigned char prev, usb, shift;
     while (i < len){
+        prev = 0;
         buf_pos = 2;
-        while (caracteres[i] == ' ' && buf_pos < LONGUEUR_USB_PAQUET && i < len){ // space character can be used either with shift or not, we dont know which one until we encounter a non space character
+        if (caracteres[i] == ' ') {
             buf[buf_pos] = 44;
+            prev = buf[buf_pos];
             ++i;
             ++buf_pos;
         }
-        if (buf_pos < LONGUEUR_USB_PAQUET && i < len){
-            if (caracteres[i] >= 'A' && caracteres[i] <= 'Z'){
-                buf[0] = 2;
-                buf[buf_pos++] = caracteres[i++] - 'A' + 4;
-                while (buf_pos < LONGUEUR_USB_PAQUET && i < len){
-                    if (caracteres[i] >= 'A' && caracteres[i] <= 'Z'){
-                        buf[buf_pos] = caracteres[i] - 'A' + 4;
-                    } else if (caracteres[i] == ' '){
-                        buf[buf_pos] = 44;
-                    } else {
-                        if (caracteres[i] == '0'
-                            || caracteres[i] == ','
-                            || caracteres[i] == '.'
-                            || caracteres[i] == '\n'
-                            || (caracteres[i] >= 'a' && caracteres[i] <= 'z')
-                            || (caracteres[i] >= '1' && caracteres[i] <= '9')){
-                            break;
-                        }
-                        return -1;
-                    }
-                    ++i;
-                    ++buf_pos;
-                }
+        while (buf_pos < LONGUEUR_USB_PAQUET && i < len){
+            shift = 0;
+            if (caracteres[i] >= 'A' && caracteres[i] <= 'Z') {
+                shift = 2;
+                usb = caracteres[i] - 'A' + 4;
+            } else if (caracteres[i] == ' ') {
+                shift = buf[0];
+                usb = 44;
+            } else if (caracteres[i] >= '1' && caracteres[i] <= '9') {
+                usb = caracteres[i] - '1' + 30;
+            } else if (caracteres[i] >= 'a' && caracteres[i] <= 'z') {
+                usb = caracteres[i] - 'a' + 4;
+            } else if (caracteres[i] == '0') {
+                usb = 39;
+            } else if (caracteres[i] == '\n') {
+                usb = 40;
+            } else if (caracteres[i] == ',') {
+                usb = 54;
+            } else if (caracteres[i] == '.') {
+                usb = 55;
             } else {
-                while (buf_pos < LONGUEUR_USB_PAQUET && i < len){
-                    if (caracteres[i] >= 'a' && caracteres[i] <= 'z'){
-                        buf[buf_pos] = caracteres[i] - 'a' + 4;
-                    } else if (caracteres[i] >= '1' && caracteres[i] <= '9'){
-                        buf[buf_pos] = caracteres[i] - '1' + 30;
-                    } else if (caracteres[i] == '0'){
-                        buf[buf_pos] = 39;
-                    } else if (caracteres[i] == ','){
-                        buf[buf_pos] = 54;
-                    } else if (caracteres[i] == '.'){
-                        buf[buf_pos] = 55;
-                    } else if (caracteres[i] == '\n'){
-                        buf[buf_pos] = 40;
-                    } else if (caracteres[i] == ' '){
-                        buf[buf_pos] = 44;
-                    } else {
-                        if (caracteres[i] >= 'A' && caracteres[i] <= 'Z'){
-                            break;
-                        }
-                        return -1;
-                    }
-                    ++i;
-                    ++buf_pos;
-                }
+                return -1;
             }
+            if (usb == prev) break;
+            if (!(buf_pos == 3 && buf[2] == 44) && buf_pos != 2 && shift != buf[0]) break;
+            buf[0] = shift;
+            buf[buf_pos] = usb;
+            prev = usb;
+            ++i;
+            ++buf_pos;
         }
         if (fwrite(buf, LONGUEUR_USB_PAQUET, 1, periphClavier) != 1) return -1;
+        // printf("Sent packet content : [%i, %i, %i, %i, %i, %i, %i, %i]\n", buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6], buf[7]);
+        usleep(tempsTraitementParPaquetMicroSecondes);
         memset(buf, 0, LONGUEUR_USB_PAQUET);
         if (fwrite(buf, LONGUEUR_USB_PAQUET, 1, periphClavier) != 1) return -1;
         usleep(tempsTraitementParPaquetMicroSecondes);
     }
-    return i;
+    return (int)i;
 }

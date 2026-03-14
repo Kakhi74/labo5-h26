@@ -83,60 +83,55 @@ static void* threadFonctionLecture(void *args){
 
     struct requete req;
     ssize_t bytes;
-    size_t bytes_read;
-    size_t buf_size;
-    int eot;
+    size_t start;
+    size_t bytes_read = 0;
+    size_t buf_size = 1024;
+    char *data = malloc(buf_size);
     while(1){
         // TODO
         FD_ZERO(&setFd);
         FD_SET(infos->pipeFd, &setFd);
         if (select(nfds, &setFd, NULL, NULL, NULL) > 0){
             if (FD_ISSET(infos->pipeFd, &setFd)){
-                eot = 0;
-                bytes = 0;
-                bytes_read = 0;
-                buf_size = 1024;
-                req.data = malloc(buf_size);
-                if (!req.data){
-                    perror("malloc failed");
+                if (bytes_read == buf_size){
+                    buf_size *= 2;
+                    data = realloc(data, buf_size);
+                }
+                bytes = read(infos->pipeFd, data + bytes_read, buf_size - bytes_read);
+                if (bytes < 0){
+                    perror("read failed");
                     pthread_exit((void *)1);
                 }
-                while (!eot) {
-                    if (bytes_read == buf_size){
-                        buf_size *= 2;
-                        req.data = realloc(req.data, buf_size);
-                        if (!req.data){
-                            perror("realloc failed");
-                            pthread_exit((void *)1);
-                        }
-                    }
-                    bytes = read(infos->pipeFd, req.data + bytes_read, buf_size - bytes_read);
-                    if (bytes == 0){
-                        fprintf(stderr, "payload is missing eot");
-                        pthread_exit((void *)1);
-                    }
-                    if (bytes < 0){
-                        perror("read failed");
-                        pthread_exit((void *)1);
-                    }
-                    while (bytes > 0){
-                        if (req.data[bytes_read] == 0x4){
-                            eot = 1;
-                            --bytes_read;
-                            req.data = realloc(req.data, bytes_read);
-                            req.taille = bytes_read;
-                            req.tempsReception = get_time();
-                            insererDonnee(&req);
-                            break;
-                        }
-                        ++bytes_read;
-                        --bytes;
+                if (bytes == 0) continue;
+                bytes_read += bytes;
+                start = 0;
+                for (size_t i = 0; i < bytes_read; ++i) {
+                    if (data[i] == 0x04) {
+                        req.taille = i - start;
+                        req.tempsReception = get_time();
+                        req.data = malloc(req.taille);
+                        memcpy(req.data, data + start, req.taille);
+                        insererDonnee(&req);
+                        start = i + 1;
                     }
                 }
+                bytes_read -= start;
+                memmove(data, data + start, bytes_read);
             }
         }
     }
     return NULL;
+}
+
+int main2() {
+    char s[] = "abcdefghijklmnopqrstuvwxyz\nABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ,.\n";
+    ecrireCaracteres(initClavier(), s, strlen(s), 100000);
+    usleep(1000000);
+    ecrireCaracteres(initClavier(), s, strlen(s), 100000);
+    usleep(1000000);
+    ecrireCaracteres(initClavier(), s, strlen(s), 100000);
+    usleep(1000000);
+    return 0;
 }
 
 int main(int argc, char* argv[]){

@@ -73,4 +73,9 @@ CMakeFiles/emulateurClavier.dir/emulateurClavier.c.o: \
  /home/setr/arm-cross-comp-env/arm-raspbian-linux-gnueabihf/arm-raspbian-linux-gnueabihf/sysroot/usr/include/arm-linux-gnueabihf/sys/select.h \
  /home/setr/arm-cross-comp-env/arm-raspbian-linux-gnueabihf/arm-raspbian-linux-gnueabihf/sysroot/usr/include/arm-linux-gnueabihf/bits/select.h \
  /home/setr/arm-cross-comp-env/arm-raspbian-linux-gnueabihf/arm-raspbian-linux-gnueabihf/sysroot/usr/include/arm-linux-gnueabihf/bits/types/sigset_t.h \
- /home/setr/arm-cross-comp-env/arm-raspbian-linux-gnueabihf/arm-raspbian-linux-gnueabihf/sysroot/usr/include/arm-linux-gnueabihf/bits/types/struct_timeval.h
+ /home/setr/arm-cross-comp-env/arm-raspbian-linux-gnueabihf/arm-raspbian-linux-gnueabihf/sysroot/usr/include/arm-linux-gnueabihf/bits/types/struct_timeval.h \
+ /home/setr/arm-cross-comp-env/arm-raspbian-linux-gnueabihf/arm-raspbian-linux-gnueabihf/sysroot/usr/include/stdlib.h \
+ /home/setr/arm-cross-comp-env/arm-raspbian-linux-gnueabihf/arm-raspbian-linux-gnueabihf/sysroot/usr/include/arm-linux-gnueabihf/bits/waitflags.h \
+ /home/setr/arm-cross-comp-env/arm-raspbian-linux-gnueabihf/arm-raspbian-linux-gnueabihf/sysroot/usr/include/arm-linux-gnueabihf/bits/waitstatus.h \
+ /home/setr/arm-cross-comp-env/arm-raspbian-linux-gnueabihf/arm-raspbian-linux-gnueabihf/sysroot/usr/include/alloca.h \
+ /home/setr/arm-cross-comp-env/arm-raspbian-linux-gnueabihf/arm-raspbian-linux-gnueabihf/sysroot/usr/include/arm-linux-gnueabihf/bits/stdlib-float.h
