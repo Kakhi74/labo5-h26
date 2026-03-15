@@ -25,7 +25,7 @@ int ecrireCaracteres(FILE* periphClavier, const char* caracteres, size_t len, un
     unsigned char buf[LONGUEUR_USB_PAQUET] = {0};
     size_t buf_pos;
     size_t i = 0;
-    unsigned char prev, usb, shift;
+    unsigned char prev, hid, shift;
     while (i < len){
         prev = 0;
         buf_pos = 2;
@@ -39,30 +39,31 @@ int ecrireCaracteres(FILE* periphClavier, const char* caracteres, size_t len, un
             shift = 0;
             if (caracteres[i] >= 'A' && caracteres[i] <= 'Z') {
                 shift = 2;
-                usb = caracteres[i] - 'A' + 4;
+                hid = caracteres[i] - 'A' + 4;
             } else if (caracteres[i] == ' ') {
                 shift = buf[0];
-                usb = 44;
+                hid = 44;
             } else if (caracteres[i] >= '1' && caracteres[i] <= '9') {
-                usb = caracteres[i] - '1' + 30;
+                hid = caracteres[i] - '1' + 30;
             } else if (caracteres[i] >= 'a' && caracteres[i] <= 'z') {
-                usb = caracteres[i] - 'a' + 4;
+                hid = caracteres[i] - 'a' + 4;
             } else if (caracteres[i] == '0') {
-                usb = 39;
+                hid = 39;
             } else if (caracteres[i] == '\n') {
-                usb = 40;
+                hid = 40;
             } else if (caracteres[i] == ',') {
-                usb = 54;
+                hid = 54;
             } else if (caracteres[i] == '.') {
-                usb = 55;
+                hid = 55;
             } else {
                 return -1;
             }
-            if (usb == prev) break;
+            // check that current HID is bigger than prev HID, because even tho they are in the correct order in the packet, the output is always interpreted in ascending order of HID
+            if (hid <= prev) break;
             if (!(buf_pos == 3 && buf[2] == 44) && buf_pos != 2 && shift != buf[0]) break;
             buf[0] = shift;
-            buf[buf_pos] = usb;
-            prev = usb;
+            buf[buf_pos] = hid;
+            prev = hid;
             ++i;
             ++buf_pos;
         }
