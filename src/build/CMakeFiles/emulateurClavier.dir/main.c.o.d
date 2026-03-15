@@ -95,26 +95,4 @@ CMakeFiles/emulateurClavier.dir/main.c.o: \
  /home/setr/arm-cross-comp-env/arm-raspbian-linux-gnueabihf/arm-raspbian-linux-gnueabihf/sysroot/usr/include/arm-linux-gnueabihf/bits/waitflags.h \
  /home/setr/arm-cross-comp-env/arm-raspbian-linux-gnueabihf/arm-raspbian-linux-gnueabihf/sysroot/usr/include/arm-linux-gnueabihf/bits/waitstatus.h \
  /home/setr/arm-cross-comp-env/arm-raspbian-linux-gnueabihf/arm-raspbian-linux-gnueabihf/sysroot/usr/include/alloca.h \
- /home/setr/arm-cross-comp-env/arm-raspbian-linux-gnueabihf/arm-raspbian-linux-gnueabihf/sysroot/usr/include/arm-linux-gnueabihf/bits/stdlib-float.h \
- /home/setr/arm-cross-comp-env/arm-raspbian-linux-gnueabihf/arm-raspbian-linux-gnueabihf/sysroot/usr/include/signal.h \
- /home/setr/arm-cross-comp-env/arm-raspbian-linux-gnueabihf/arm-raspbian-linux-gnueabihf/sysroot/usr/include/arm-linux-gnueabihf/bits/signum-generic.h \
- /home/setr/arm-cross-comp-env/arm-raspbian-linux-gnueabihf/arm-raspbian-linux-gnueabihf/sysroot/usr/include/arm-linux-gnueabihf/bits/signum-arch.h \
- /home/setr/arm-cross-comp-env/arm-raspbian-linux-gnueabihf/arm-raspbian-linux-gnueabihf/sysroot/usr/include/arm-linux-gnueabihf/bits/types/sig_atomic_t.h \
- /home/setr/arm-cross-comp-env/arm-raspbian-linux-gnueabihf/arm-raspbian-linux-gnueabihf/sysroot/usr/include/arm-linux-gnueabihf/bits/types/siginfo_t.h \
- /home/setr/arm-cross-comp-env/arm-raspbian-linux-gnueabihf/arm-raspbian-linux-gnueabihf/sysroot/usr/include/arm-linux-gnueabihf/bits/types/__sigval_t.h \
- /home/setr/arm-cross-comp-env/arm-raspbian-linux-gnueabihf/arm-raspbian-linux-gnueabihf/sysroot/usr/include/arm-linux-gnueabihf/bits/siginfo-arch.h \
- /home/setr/arm-cross-comp-env/arm-raspbian-linux-gnueabihf/arm-raspbian-linux-gnueabihf/sysroot/usr/include/arm-linux-gnueabihf/bits/siginfo-consts.h \
- /home/setr/arm-cross-comp-env/arm-raspbian-linux-gnueabihf/arm-raspbian-linux-gnueabihf/sysroot/usr/include/arm-linux-gnueabihf/bits/types/sigval_t.h \
- /home/setr/arm-cross-comp-env/arm-raspbian-linux-gnueabihf/arm-raspbian-linux-gnueabihf/sysroot/usr/include/arm-linux-gnueabihf/bits/types/sigevent_t.h \
- /home/setr/arm-cross-comp-env/arm-raspbian-linux-gnueabihf/arm-raspbian-linux-gnueabihf/sysroot/usr/include/arm-linux-gnueabihf/bits/sigevent-consts.h \
- /home/setr/arm-cross-comp-env/arm-raspbian-linux-gnueabihf/arm-raspbian-linux-gnueabihf/sysroot/usr/include/arm-linux-gnueabihf/bits/sigaction.h \
- /home/setr/arm-cross-comp-env/arm-raspbian-linux-gnueabihf/arm-raspbian-linux-gnueabihf/sysroot/usr/include/arm-linux-gnueabihf/bits/sigcontext.h \
- /home/setr/arm-cross-comp-env/arm-raspbian-linux-gnueabihf/arm-raspbian-linux-gnueabihf/sysroot/usr/include/arm-linux-gnueabihf/asm/sigcontext.h \
- /home/setr/arm-cross-comp-env/arm-raspbian-linux-gnueabihf/arm-raspbian-linux-gnueabihf/sysroot/usr/include/arm-linux-gnueabihf/bits/types/stack_t.h \
- /home/setr/arm-cross-comp-env/arm-raspbian-linux-gnueabihf/arm-raspbian-linux-gnueabihf/sysroot/usr/include/arm-linux-gnueabihf/sys/ucontext.h \
- /home/setr/arm-cross-comp-env/arm-raspbian-linux-gnueabihf/arm-raspbian-linux-gnueabihf/sysroot/usr/include/arm-linux-gnueabihf/bits/sigstack.h \
- /home/setr/arm-cross-comp-env/arm-raspbian-linux-gnueabihf/arm-raspbian-linux-gnueabihf/sysroot/usr/include/arm-linux-gnueabihf/bits/sigstksz.h \
- /home/setr/arm-cross-comp-env/arm-raspbian-linux-gnueabihf/arm-raspbian-linux-gnueabihf/sysroot/usr/include/arm-linux-gnueabihf/bits/ss_flags.h \
- /home/setr/arm-cross-comp-env/arm-raspbian-linux-gnueabihf/arm-raspbian-linux-gnueabihf/sysroot/usr/include/arm-linux-gnueabihf/bits/types/struct_sigstack.h \
- /home/setr/arm-cross-comp-env/arm-raspbian-linux-gnueabihf/arm-raspbian-linux-gnueabihf/sysroot/usr/include/arm-linux-gnueabihf/bits/sigthread.h \
- /home/setr/arm-cross-comp-env/arm-raspbian-linux-gnueabihf/arm-raspbian-linux-gnueabihf/sysroot/usr/include/arm-linux-gnueabihf/bits/signal_ext.h
+ /home/setr/arm-cross-comp-env/arm-raspbian-linux-gnueabihf/arm-raspbian-linux-gnueabihf/sysroot/usr/include/arm-linux-gnueabihf/bits/stdlib-float.h
