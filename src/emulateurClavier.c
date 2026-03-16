@@ -68,12 +68,13 @@ int ecrireCaracteres(FILE* periphClavier, const char* caracteres, size_t len, un
             ++buf_pos;
         }
         if (fwrite(buf, LONGUEUR_USB_PAQUET, 1, periphClavier) != 1) return -1;
-        printf("Sent packet content : [%i, %i, %i, %i, %i, %i, %i, %i]\n", buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6], buf[7]);
+        // printf("Sent packet content : [%i, %i, %i, %i, %i, %i, %i, %i]\n", buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6], buf[7]);
         usleep(tempsTraitementParPaquetMicroSecondes);
         memset(buf, 0, LONGUEUR_USB_PAQUET);
+        // release
+        if (fwrite(buf, LONGUEUR_USB_PAQUET, 1, periphClavier) != 1) return -1;
+        usleep(tempsTraitementParPaquetMicroSecondes);
     }
-    // release QUESTION_PROF : should i release after each packet sent? releasing one time after processing the entire message seems to work fine
-    if (fwrite(buf, LONGUEUR_USB_PAQUET, 1, periphClavier) != 1) return -1;
-    usleep(tempsTraitementParPaquetMicroSecondes);
+    // QUESTION_PROF : should i release after each packet sent? releasing one time after processing the entire message seems to work fine
     return (int)i;
 }
