@@ -17,7 +17,7 @@
 #include "emulateurClavier.h"
 #include "tamponCirculaire.h"
 
-
+size_t taille_tampon;
 
 static void* threadFonctionClavier(void* args){
     // Implementez ici votre fonction de thread pour l'ecriture sur le bus USB
@@ -89,6 +89,7 @@ static void* threadFonctionLecture(void *args){
     char *data = malloc(buf_size);
     while(1){
         // TODO
+        // if (longueurFile() == taille_tampon) usleep(500); // sched_yield();
         FD_ZERO(&setFd);
         FD_SET(infos->pipeFd, &setFd);
         if (select(nfds, &setFd, NULL, NULL, NULL) > 0){
@@ -107,6 +108,7 @@ static void* threadFonctionLecture(void *args){
                 start = 0;
                 for (size_t i = 0; i < bytes_read; ++i) {
                     if (data[i] == 0x04) {
+                        sched_yield();
                         req.taille = i - start;
                         req.tempsReception = get_time();
                         req.data = malloc(req.taille);
@@ -115,10 +117,8 @@ static void* threadFonctionLecture(void *args){
                         start = i + 1;
                     }
                 }
-                if (start > 0){
-                    bytes_read -= start;
-                    memmove(data, data + start, bytes_read);
-                }
+                bytes_read -= start;
+                memmove(data, data + start, bytes_read);
             }
         }
     }
@@ -169,9 +169,9 @@ int main(int argc, char* argv[]){
     // 3) Initialiser le tampon circulaire avec la bonne taille
 
     // TODO
-    size_t buf_size = atoi(argv[3]);
-    if (initTamponCirculaire(buf_size) < 0){
-        fprintf(stderr, "initTamponCirculaire(%d) failed", buf_size);
+    taille_tampon = atoi(argv[3]);
+    if (initTamponCirculaire(taille_tampon) < 0){
+        fprintf(stderr, "initTamponCirculaire(%d) failed", taille_tampon);
         return -1;
     }
 
