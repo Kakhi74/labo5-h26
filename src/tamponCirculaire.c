@@ -78,10 +78,9 @@ void resetStats(){
     nombreRequetesRecues = 0;
     nombreRequetesTraitees = 0;
     nombreRequetesPerdues = 0;
-
     sommeTempsAttente = 0;
-    tempsDebutPeriode = get_time();
     pthread_mutex_unlock(&mutexTampon);
+    tempsDebutPeriode = get_time();
 }
 
 void calculeStats(struct statistiques *stats){
@@ -177,5 +176,6 @@ unsigned int longueurFile(){
     // Retourne la longueur courante de la file contenue dans votre tampon circulaire.
     
     // TODO
+    // QUESTION_PROF: what is this function for? it is never used
     return longueurCourante;
 }
