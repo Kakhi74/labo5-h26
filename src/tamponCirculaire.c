@@ -74,20 +74,20 @@ void resetStats(){
 
     // TODO
     // QUESTION_PROF: proteger par mutex?
-    // pthread_mutex_lock(&mutexTampon);
+    pthread_mutex_lock(&mutexTampon);
     nombreRequetesRecues = 0;
     nombreRequetesTraitees = 0;
     nombreRequetesPerdues = 0;
 
     sommeTempsAttente = 0;
     tempsDebutPeriode = get_time();
-    // pthread_mutex_unlock(&mutexTampon);
+    pthread_mutex_unlock(&mutexTampon);
 }
 
 void calculeStats(struct statistiques *stats){
     // TODO
     // QUESTION_PROF: proteger par mutex?
-    // pthread_mutex_lock(&mutexTampon);
+    pthread_mutex_lock(&mutexTampon);
     stats->nombreRequetesTraitees = nombreRequetesTraitees;
     stats->nombreRequetesPerdues = nombreRequetesPerdues;
     stats->nombreRequetesEnAttente = longueurCourante;
@@ -98,7 +98,7 @@ void calculeStats(struct statistiques *stats){
     stats->lambda = nombreRequetesRecues / dt;
     stats->mu = nombreRequetesTraitees / dt;
     stats->rho = stats->lambda / stats->mu;
-    // pthread_mutex_unlock(&mutexTampon);
+    pthread_mutex_unlock(&mutexTampon);
 }
 
 int insererDonnee(struct requete *req){
@@ -119,11 +119,11 @@ int insererDonnee(struct requete *req){
    
     // TODO
     char *data_to_free = NULL;
+    struct requete *reqs = (struct requete *)memoire;
 
     pthread_mutex_lock(&mutexTampon);
-    struct requete *reqs = (struct requete *)memoire;
     if (longueurCourante == memoireTaille){
-        data_to_free = (reqs + posLecture)->data;
+        data_to_free = reqs[posLecture].data;
         posLecture = (posLecture + 1) % memoireTaille;
         ++nombreRequetesPerdues;
     } else {
@@ -161,7 +161,9 @@ int consommerDonnee(struct requete *req){
         pthread_mutex_unlock(&mutexTampon);
         return 0;
     }
-    memcpy(req, (struct requete *)memoire + posLecture, sizeof(struct requete));
+    struct requete *reqLecture = (struct requete *)memoire + posLecture;
+    memcpy(req, reqLecture, sizeof(struct requete));
+    reqLecture->data = NULL;
     posLecture = (posLecture + 1) % memoireTaille;
     --longueurCourante;
     ++nombreRequetesTraitees;

@@ -102,7 +102,7 @@ static void* threadFonctionLecture(void *args){
                     perror("read failed");
                     pthread_exit((void *)1);
                 }
-                if (bytes == 0) continue;
+                if (bytes == 0) break;
                 bytes_read += bytes;
                 start = 0;
                 for (size_t i = 0; i < bytes_read; ++i) {
@@ -122,6 +122,7 @@ static void* threadFonctionLecture(void *args){
             }
         }
     }
+    free(data);
     return NULL;
 }
 
@@ -154,7 +155,7 @@ int main(int argc, char* argv[]){
 
     // TODO
     // TODO: Check later if we need read and write
-    int pipeFd = open(argv[1], O_RDWR, 0777);
+    int pipeFd = open(argv[1], O_RDONLY, 0777);
     if (pipeFd < 0){
         perror("open failed");
         return -1;
