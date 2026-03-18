@@ -39,15 +39,14 @@ static void* threadFonctionClavier(void* args){
     struct requete req;
     while(1){
         // TODO
-        if (consommerDonnee(&req) == 0){
-            usleep(500);
-        } else {
-            // TODO: review ecrire caracteres, la portion req.data, not sure
+        if (consommerDonnee(&req) > 0){
             if (ecrireCaracteres(infos->pointeurClavier, req.data, req.taille, infos->tempsTraitementParCaractereMicroSecondes) < 0){
                 fprintf(stderr, "ecrireCaracteres failed");
                 pthread_exit((void *)1);
             }
             free(req.data);
+        } else {
+            usleep(500);
         }
     }
     return NULL;
@@ -126,17 +125,6 @@ static void* threadFonctionLecture(void *args){
     return NULL;
 }
 
-int main2() {
-    char s[] = "abcdefghijklmnopqrstuvwxyz\nABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ,.\n";
-    ecrireCaracteres(initClavier(), s, strlen(s), 100000);
-    usleep(1000000);
-    ecrireCaracteres(initClavier(), s, strlen(s), 100000);
-    usleep(1000000);
-    ecrireCaracteres(initClavier(), s, strlen(s), 100000);
-    usleep(1000000);
-    return 0;
-}
-
 int main(int argc, char* argv[]){
     if(argc < 4){
         printf("Pas assez d'arguments! Attendu : ./emulateurClavier cheminPipe tempsAttenteParPaquet tailleTamponCirculaire\n");
@@ -154,7 +142,6 @@ int main(int argc, char* argv[]){
     // 1) Ouvrir le named pipe
 
     // TODO
-    // TODO: Check later if we need read and write
     int pipeFd = open(argv[1], O_RDONLY, 0777);
     if (pipeFd < 0){
         perror("open failed");
@@ -206,8 +193,9 @@ int main(int argc, char* argv[]){
 
     // QUESTION_PROF - should i cleanup? im hesitating since its an infinite loop
     //join threads, destroy barier, handle signal SIGINT, cancel threads, etc...
-    pthread_join(thread_clavier, NULL);
-    pthread_join(thread_lecteur, NULL);
+    // pthread_join(thread_clavier, NULL);
+    // pthread_join(thread_lecteur, NULL);
+    // pthread_barrier_destroy(&barrier);
 
     return 0;
 }

@@ -155,6 +155,8 @@ int consommerDonnee(struct requete *req){
     
     // TODO
     // QUESTION_PROF: should i make the get_time() call outside of mutex lock?
+    // should nombreRequeteTraitees and sommeTempsAttente be modified outside the mutex since they are only written by one thread?
+    // however they are read for statistics
     pthread_mutex_lock(&mutexTampon);
     if (longueurCourante == 0){
         pthread_mutex_unlock(&mutexTampon);
