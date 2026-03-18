@@ -204,6 +204,8 @@ int main(int argc, char* argv[]){
         usleep(2e6);
     }
 
+    // QUESTION_PROF - should i cleanup? im hesitating since its an infinite loop
+    //join threads, destroy barier, handle signal SIGINT, cancel threads, etc...
     pthread_join(thread_clavier, NULL);
     pthread_join(thread_lecteur, NULL);
 
