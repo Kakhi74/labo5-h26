@@ -44,6 +44,7 @@ static void* threadFonctionClavier(void* args){
                 fprintf(stderr, "ecrireCaracteres failed");
                 pthread_exit((void *)1);
             }
+            ajouterTempsSysteme(req.tempsReception);
             free(req.data);
         } else {
             usleep(500);

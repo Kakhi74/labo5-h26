@@ -20,8 +20,9 @@ double get_time(){
 
 void afficherStats(unsigned int nbrSecondesDepuisDemarrage, struct statistiques *stats){
     // Deja implementee pour vous
-    char lineBuf[74];
+    static char lineBuf[75];
     memset(lineBuf, '-', sizeof(lineBuf));
+    lineBuf[74] = '\0';
     printf("\033[H\033[J");     // Efface le terminal
     printf("Statistiques pour t=%u secondes depuis le demarrage\n", nbrSecondesDepuisDemarrage);
     printf("%s\n", lineBuf);

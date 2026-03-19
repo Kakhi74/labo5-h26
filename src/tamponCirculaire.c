@@ -28,13 +28,13 @@ static unsigned int posLecture, posEcriture, longueurCourante;
 pthread_mutex_t mutexTampon;
 
 // Pour les statistiques
-static unsigned int nombreRequetesRecues, nombreRequetesTraitees, nombreRequetesPerdues;
+static unsigned int nombreRequetesRecues, nombreRequetesTraitees, nombreRequetesPerdues, nombreRequetesConsommer;
 
 // Le tempsDebutPeriode permet de se rappeler du debut de la periode ou les statistiques sont mesurees
 // sommeTempsAttente contient la somme de toutes les periodes d'attente pour les requetes
 // (vous pourrez donc calculer la moyenne du temps d'attente en utilisant les autres variables sur le
 // nombre de requetes).
-static double tempsDebutPeriode, sommeTempsAttente;
+static double tempsDebutPeriode, sommeTempsAttente, sommeTempsSysteme, dernierTempsAttente;
 
 int initTamponCirculaire(size_t taille){
     // Initialisez ici:
@@ -76,27 +76,36 @@ void resetStats(){
     // QUESTION_PROF: proteger par mutex?
     pthread_mutex_lock(&mutexTampon);
     nombreRequetesRecues = 0;
-    nombreRequetesTraitees = 0;
     nombreRequetesPerdues = 0;
-    sommeTempsAttente = 0;
-    pthread_mutex_unlock(&mutexTampon);
+    nombreRequetesTraitees = 0;
+    nombreRequetesConsommer = 0;
+    sommeTempsSysteme = 0.0;
+    sommeTempsAttente = 0.0;
     tempsDebutPeriode = get_time();
+    pthread_mutex_unlock(&mutexTampon);
 }
 
 void calculeStats(struct statistiques *stats){
     // TODO
     // QUESTION_PROF: proteger par mutex?
     pthread_mutex_lock(&mutexTampon);
+    
     stats->nombreRequetesTraitees = nombreRequetesTraitees;
     stats->nombreRequetesPerdues = nombreRequetesPerdues;
     stats->nombreRequetesEnAttente = longueurCourante;
-    
-    stats->tempsTraitementMoyen= sommeTempsAttente / nombreRequetesTraitees;
 
+    if (nombreRequetesConsommer > nombreRequetesTraitees){
+        sommeTempsAttente -= dernierTempsAttente;
+    }
+    double tempsAttenteMoyen = sommeTempsAttente / (double)nombreRequetesTraitees;
+    double tempsSystemeMoyen = sommeTempsSysteme / (double)nombreRequetesTraitees;
+    stats->tempsTraitementMoyen = tempsSystemeMoyen - tempsAttenteMoyen;
+    
     double dt = get_time() - tempsDebutPeriode;
-    stats->lambda = nombreRequetesRecues / dt;
-    stats->mu = nombreRequetesTraitees / dt;
+    stats->lambda = (double)nombreRequetesRecues / dt;
+    stats->mu = 1.0 / stats->tempsTraitementMoyen;
     stats->rho = stats->lambda / stats->mu;
+
     pthread_mutex_unlock(&mutexTampon);
 }
 
@@ -167,11 +176,19 @@ int consommerDonnee(struct requete *req){
     reqLecture->data = NULL;
     posLecture = (posLecture + 1) % memoireTaille;
     --longueurCourante;
-    ++nombreRequetesTraitees;
-    sommeTempsAttente += get_time() - req->tempsReception;;
+    ++nombreRequetesConsommer;
+    dernierTempsAttente = get_time() - req->tempsReception; 
+    sommeTempsAttente += dernierTempsAttente;
     pthread_mutex_unlock(&mutexTampon);
 
     return 1;
+}
+
+void ajouterTempsSysteme(double tempsReception){
+    pthread_mutex_lock(&mutexTampon);
+    ++nombreRequetesTraitees;
+    sommeTempsSysteme += get_time() - tempsReception;
+    pthread_mutex_unlock(&mutexTampon);
 }
 
 unsigned int longueurFile(){
