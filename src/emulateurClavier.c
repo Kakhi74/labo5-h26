@@ -29,6 +29,7 @@ int ecrireCaracteres(FILE* periphClavier, const char* caracteres, size_t len, un
     while (i < len){
         prev = 0;
         buf_pos = 2;
+        // space could be either pressed with shift or not, when it is the first character, we will adjust to the shift of the next character
         if (caracteres[i] == ' ') {
             buf[buf_pos] = 44;
             prev = buf[buf_pos];
@@ -59,6 +60,8 @@ int ecrireCaracteres(FILE* periphClavier, const char* caracteres, size_t len, un
                 return -1;
             }
             // check that current HID is bigger than prev HID, because even tho they are in the correct order in the packet, the output is always interpreted in ascending order of HID
+            // checking hid < prev solves the issues I reported at
+            // https://discord.com/channels/1455270549025587252/1455272461154390077/threads/1482141859810906253
             if (hid <= prev) break;
             if (!(buf_pos == 3 && buf[2] == 44) && buf_pos != 2 && shift != buf[0]) break;
             buf[0] = shift;
