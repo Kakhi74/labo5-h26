@@ -14,7 +14,7 @@ FILE* initClavier(){
     // Deja implementee pour vous
     FILE* f = fopen(FICHIER_CLAVIER_VIRTUEL, "wb");
     if (f == NULL){
-        perror("fopen");
+        perror("fopen failed");
         exit(1);
     }
     setbuf(f, NULL);        // On desactive le buffering pour eviter tout delai
